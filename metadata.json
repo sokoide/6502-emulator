@@ -1,0 +1,5 @@
+{
+  "name": "6502 CPU Emulator",
+  "description": "A web-based emulator for the 6502 microprocessor, allowing users to load and run 6502 assembly programs, inspect CPU state, and view memory.",
+  "requestFramePermissions": []
+}
