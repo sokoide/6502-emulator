@@ -15,17 +15,17 @@ interface CpuControlsProps {
 
 const ControlButton: React.FC<{ onClick: () => void; children: React.ReactNode; color?: string; disabled?: boolean, className?: string }> =
   ({ onClick, children, color = "blue", disabled = false, className = "" }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`px-4 py-2 font-semibold rounded-md shadow-sm text-white 
-                bg-${color}-600 hover:bg-${color}-700 focus:outline-none focus:ring-2 
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`px-4 py-2 font-semibold rounded-md shadow-sm text-white
+                bg-${color}-600 hover:bg-${color}-700 focus:outline-none focus:ring-2
                 focus:ring-${color}-500 focus:ring-offset-2 focus:ring-offset-gray-900
                 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors ${className}`}
-  >
-    {children}
-  </button>
-);
+    >
+      {children}
+    </button>
+  );
 
 // --- Define your sample programs here ---
 // Each object should have:
@@ -33,20 +33,20 @@ const ControlButton: React.FC<{ onClick: () => void; children: React.ReactNode; 
 // - hex: string (space-separated hex bytes of the program)
 // - loadAddress: number (the address where the program should be loaded)
 const samplePrograms = [
-  { 
-    name: "Sample 1: Infinite Loop (JMP $0200)", 
+  {
+    name: "Sample 1: Infinite Loop (JMP $0200)",
     hex: "4C 00 02", // JMP $0200 (assuming loaded at $0200, it jumps to itself)
-    loadAddress: 0x0200 
+    loadAddress: 0x0200
   },
-  { 
-    name: "Sample 2: Load A, Store $00, Loop", 
+  {
+    name: "Sample 2: Load A, Store $00, Loop",
     hex: "A9 C0 85 00 4C 04 02", // LDA #$C0, STA $00, JMP $0204 (loop)
-    loadAddress: 0x0200 
+    loadAddress: 0x0200
   },
-  { 
-    name: "Sample 3: Default Simple Program (from constants)", 
-    hex: SIMPLE_PROGRAM_HEX, 
-    loadAddress: DEFAULT_PROGRAM_LOAD_ADDRESS 
+  {
+    name: "Sample 3: Default Simple Program (from constants)",
+    hex: SIMPLE_PROGRAM_HEX,
+    loadAddress: DEFAULT_PROGRAM_LOAD_ADDRESS
   },
   // To add your own program:
   // {
@@ -58,8 +58,8 @@ const samplePrograms = [
 // --- End of sample programs definition ---
 
 
-const CpuControls: React.FC<CpuControlsProps> = ({ 
-    onLoadProgram, onReset, onStep, onRun, isRunning, runSpeed, onSetRunSpeed, isHalted 
+const CpuControls: React.FC<CpuControlsProps> = ({
+  onLoadProgram, onReset, onStep, onRun, isRunning, runSpeed, onSetRunSpeed, isHalted
 }) => {
   const [hexCode, setHexCode] = useState<string>(SIMPLE_PROGRAM_HEX);
   const [loadAddress, setLoadAddress] = useState<string>(DEFAULT_PROGRAM_LOAD_ADDRESS.toString(16));
@@ -86,9 +86,9 @@ const CpuControls: React.FC<CpuControlsProps> = ({
     onLoadProgram(sample.hex, sample.loadAddress);
     setIsSampleMenuOpen(false);
   };
-  
+
   // Close sample menu if clicked outside
-// Fixed: Import useEffect from react
+  // Fixed: Import useEffect from react
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sampleMenuRef.current && !sampleMenuRef.current.contains(event.target as Node)) {
@@ -105,7 +105,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4 text-gray-200 border-b border-gray-700 pb-2">Controls</h2>
-      
+
       <div className="mb-4">
         <label htmlFor="hexCode" className="block text-sm font-medium text-gray-300 mb-1">
           Program Hex Code (space separated bytes):
@@ -135,17 +135,17 @@ const CpuControls: React.FC<CpuControlsProps> = ({
           aria-label="Load Address Input"
         />
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
         <div className="relative col-span-1" ref={sampleMenuRef}>
-          <ControlButton 
-            onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)} 
+          <ControlButton
+            onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
             color="purple"
             className="w-full"
             aria-haspopup="true"
             aria-expanded={isSampleMenuOpen}
           >
-            Load Sample Program &#x25BC; 
+            Load Sample Program &#x25BC;
           </ControlButton>
           {isSampleMenuOpen && (
             <div className="absolute z-10 mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
@@ -165,7 +165,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
         <ControlButton onClick={handleLoadFromTextarea} color="indigo" className="w-full">Load from Textarea</ControlButton>
         <ControlButton onClick={onReset} color="red" className="w-full">Reset CPU</ControlButton>
       </div>
-       <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mb-4">
         <ControlButton onClick={onStep} color="green" disabled={isRunning || isHalted} className="w-full">Step</ControlButton>
         <ControlButton onClick={handleRunToggle} color={isRunning ? "yellow" : "teal"} disabled={isHalted} className="w-full">
           {isRunning ? 'Pause' : 'Run'}
@@ -181,7 +181,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
           type="range"
           id="runSpeed"
           min="1"
-          max="1000" 
+          max="1000"
           step="1"
           value={runSpeed}
           onChange={(e) => onSetRunSpeed(parseInt(e.target.value))}
@@ -189,7 +189,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
           disabled={isRunning}
           aria-label="Run Speed Control"
         />
-         <div className="text-xs text-gray-400 flex justify-between"><span>Slow (1)</span> <span>Fast (1000)</span></div>
+        <div className="text-xs text-gray-400 flex justify-between"><span>Slow (1)</span> <span>Fast (1000)</span></div>
       </div>
     </div>
   );

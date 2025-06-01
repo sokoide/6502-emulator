@@ -11,21 +11,21 @@ import { InstructionInfo } from './types';
 import { SIMPLE_PROGRAM_HEX, DEFAULT_PROGRAM_LOAD_ADDRESS } from './constants';
 
 const App: React.FC = () => {
-  const { 
-    cpu, 
-    memory, 
-    logs, 
-    loadProgram, 
-    resetCPU, 
-    step, 
-    disassemble, 
-    addLog 
+  const {
+    cpu,
+    memory,
+    logs,
+    loadProgram,
+    resetCPU,
+    step,
+    disassemble,
+    addLog
   } = use6502Emulator();
-  
+
   const [isRunning, setIsRunning] = useState(false);
   const [runSpeed, setRunSpeed] = useState(100); // Steps per second
   const [disassembledCode, setDisassembledCode] = useState<InstructionInfo[]>([]);
-  
+
   const runIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -60,10 +60,10 @@ const App: React.FC = () => {
       const intervalTime = Math.max(1, 1000 / runSpeed); // Ensure interval is at least 1ms
       runIntervalRef.current = window.setInterval(() => {
         if (cpu.halted) { // Check halt state inside interval as well
-            setIsRunning(false);
-            if (runIntervalRef.current) clearInterval(runIntervalRef.current);
-            addLog("CPU halted during run.", "warn");
-            return;
+          setIsRunning(false);
+          if (runIntervalRef.current) clearInterval(runIntervalRef.current);
+          addLog("CPU halted during run.", "warn");
+          return;
         }
         step();
       }, intervalTime);
@@ -85,7 +85,7 @@ const App: React.FC = () => {
   }, []);
 
   // Adjust running interval if speed changes while running
-   useEffect(() => {
+  useEffect(() => {
     if (isRunning && !cpu.halted) {
       handleRun(true); // Restart with new speed
     }
@@ -129,7 +129,7 @@ const App: React.FC = () => {
           <DisassemblyView instructions={disassembledCode} currentPC={cpu.PC} />
         </div>
       </div>
-      
+
       <MemoryView memory={memory} pcAddress={cpu.PC} />
       <LogView logs={logs} />
 

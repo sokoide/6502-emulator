@@ -24,13 +24,13 @@ const CpuRegistersView: React.FC<CpuRegistersViewProps> = ({ cpu }) => {
         <RegisterDisplay name="X" value={cpu.X} />
         <RegisterDisplay name="Y" value={cpu.Y} />
         <RegisterDisplay name="PC" value={cpu.PC} />
-        <RegisterDisplay name="SP" value={cpu.SP} hex={false} /> 
+        <RegisterDisplay name="SP" value={cpu.SP} hex={false} />
         {/* SP is usually shown as $01xx, but raw value is 00-FF. For simplicity, show $01XX form in text */}
-         <div className="flex justify-between items-center p-2 bg-gray-700 rounded">
-            <span className="font-mono text-sm text-blue-300">SP (Abs)</span>
-            <span className="font-mono text-lg text-green-300">
-                $01{cpu.SP.toString(16).toUpperCase().padStart(2, '0')}
-            </span>
+        <div className="flex justify-between items-center p-2 bg-gray-700 rounded">
+          <span className="font-mono text-sm text-blue-300">SP (Abs)</span>
+          <span className="font-mono text-lg text-green-300">
+            $01{cpu.SP.toString(16).toUpperCase().padStart(2, '0')}
+          </span>
         </div>
         <RegisterDisplay name="Cycles" value={cpu.cycles} hex={false} />
       </div>

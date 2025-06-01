@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { CPUState, Flag, InstructionInfo, LogEntry } from '../types';
-import { MEMORY_SIZE, DEFAULT_PROGRAM_LOAD_ADDRESS, RESET_VECTOR_ADDRESS} from '../constants';
+import { MEMORY_SIZE, DEFAULT_PROGRAM_LOAD_ADDRESS, RESET_VECTOR_ADDRESS } from '../constants';
 import { getInstructionDefinition } from './cpuInstructions';
 import * as AM from './cpuAddressingModes';
 
@@ -28,9 +28,9 @@ export const use6502Emulator = () => {
     // Try to read reset vector if memory is initialized, otherwise default
     let startPC = loadAddress ?? DEFAULT_PROGRAM_LOAD_ADDRESS;
     if (memory[RESET_VECTOR_ADDRESS] !== undefined && memory[RESET_VECTOR_ADDRESS + 1] !== undefined && !loadAddress) {
-        const lowByte = memory[RESET_VECTOR_ADDRESS];
-        const highByte = memory[RESET_VECTOR_ADDRESS + 1];
-        startPC = (highByte << 8) | lowByte;
+      const lowByte = memory[RESET_VECTOR_ADDRESS];
+      const highByte = memory[RESET_VECTOR_ADDRESS + 1];
+      startPC = (highByte << 8) | lowByte;
     }
 
     setCPU({
@@ -50,8 +50,8 @@ export const use6502Emulator = () => {
     const bytes = hexString.trim().split(/\s+/).map(s => parseInt(s, 16));
 
     if (bytes.some(isNaN)) {
-        addLog("Error parsing hex string. Contains invalid characters.", 'error');
-        return;
+      addLog("Error parsing hex string. Contains invalid characters.", 'error');
+      return;
     }
 
     bytes.forEach((byte, index) => {
@@ -138,34 +138,34 @@ export const use6502Emulator = () => {
         instructionBytesLength = instructionDef.bytes;
 
         // Gather operand bytes for display
-        for(let j=1; j < instructionDef.bytes; j++) {
-            if (currentAddress + j < MEMORY_SIZE) {
-                bytes.push(memory[currentAddress + j]);
-            } else {
-                bytes.push(0x00); // Placeholder if out of bounds
-            }
+        for (let j = 1; j < instructionDef.bytes; j++) {
+          if (currentAddress + j < MEMORY_SIZE) {
+            bytes.push(memory[currentAddress + j]);
+          } else {
+            bytes.push(0x00); // Placeholder if out of bounds
+          }
         }
 
         // Format operand string (simplified)
         // This is a very basic disassembler for operand formatting.
         // A proper one would use the addressing mode logic.
         if (instructionDef.bytes === 2) {
-            const operand = memory[currentAddress + 1];
-            if (instructionDef.addressingMode === AM.IMM) operandStr = `#$${operand.toString(16).padStart(2, '0')}`;
-            else if (instructionDef.addressingMode === AM.REL) {
-                 const relAddr = (currentAddress + 2 + (operand > 127 ? operand - 256 : operand)) & 0xFFFF;
-                 operandStr = `$${relAddr.toString(16).padStart(4, '0')}`;
-            }
-            else operandStr = `$${operand.toString(16).padStart(2, '0')}`;
+          const operand = memory[currentAddress + 1];
+          if (instructionDef.addressingMode === AM.IMM) operandStr = `#$${operand.toString(16).padStart(2, '0')}`;
+          else if (instructionDef.addressingMode === AM.REL) {
+            const relAddr = (currentAddress + 2 + (operand > 127 ? operand - 256 : operand)) & 0xFFFF;
+            operandStr = `$${relAddr.toString(16).padStart(4, '0')}`;
+          }
+          else operandStr = `$${operand.toString(16).padStart(2, '0')}`;
         } else if (instructionDef.bytes === 3) {
-            const operandLow = memory[currentAddress + 1];
-            const operandHigh = memory[currentAddress + 2];
-            const operandWord = (operandHigh << 8) | operandLow;
-            operandStr = `$${operandWord.toString(16).padStart(4, '0')}`;
+          const operandLow = memory[currentAddress + 1];
+          const operandHigh = memory[currentAddress + 2];
+          const operandWord = (operandHigh << 8) | operandLow;
+          operandStr = `$${operandWord.toString(16).padStart(4, '0')}`;
         }
         text = `${instructionDef.mnemonic} ${operandStr}`;
       } else {
-         text = `DB $${opCode.toString(16).padStart(2, '0')}`; // Data Byte if unknown opcode
+        text = `DB $${opCode.toString(16).padStart(2, '0')}`; // Data Byte if unknown opcode
       }
 
       disassembly.push({

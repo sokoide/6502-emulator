@@ -30,7 +30,7 @@ const CpuFlagsView: React.FC<CpuFlagsViewProps> = ({ cpu }) => {
     <div className="bg-gray-800 p-4 rounded-lg shadow-md mt-4">
       <h2 className="text-xl font-semibold mb-3 text-gray-200 border-b border-gray-700 pb-2">Status Flags (P)
         <span className="font-mono text-sm ml-2 text-purple-300">
-            ${P.toString(16).toUpperCase().padStart(2, '0')}
+          ${P.toString(16).toUpperCase().padStart(2, '0')}
         </span>
       </h2>
       <div className="flex justify-around items-center bg-gray-700 p-3 rounded">
@@ -43,7 +43,7 @@ const CpuFlagsView: React.FC<CpuFlagsViewProps> = ({ cpu }) => {
           </div>
         ))}
       </div>
-       {cpu.halted && <p className="text-red-400 font-bold text-center mt-3">CPU HALTED</p>}
+      {cpu.halted && <p className="text-red-400 font-bold text-center mt-3">CPU HALTED</p>}
     </div>
   );
 };
