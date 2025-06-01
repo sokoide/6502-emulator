@@ -84,26 +84,22 @@ const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAdd
 
 
         byteCells.push(
-          <td key={j} className={cellClass}>
-            {byteValue !== undefined ? byteValue.toString(16).padStart(2, '0').toUpperCase() : '--'}
-          </td>
+          <td key={j} className={cellClass}>{byteValue !== undefined ? byteValue.toString(16).padStart(2, '0').toUpperCase() : '--'}</td>
         );
         asciiChars.push(
           <td key={`asc-${j}`} className={`w-4 h-8 p-1 font-mono text-xs text-center ${currentByteAddress === pcAddress ? 'text-blue-300' : 'text-teal-300'}`}>
-            {(byteValue >= 32 && byteValue <= 126) ? String.fromCharCode(byteValue) : '.'}
-          </td>
+            {(byteValue >= 32 && byteValue <= 126) ? String.fromCharCode(byteValue) : '.'}</td>
         );
       }
 
       rows.push(
         <tr key={i} className="hover:bg-gray-700 transition-colors">
-          <td className="p-1 font-mono text-xs text-purple-300 sticky left-0 bg-gray-800">
-            ${rowAddress.toString(16).padStart(4, '0').toUpperCase()}
-          </td>
+          <td className="p-1 font-mono text-xs text-purple-300 sticky left-0 bg-gray-800">${rowAddress.toString(16).padStart(4, '0').toUpperCase()}</td>
           {byteCells}
-          <td className="p-1 border-l border-gray-600"></td> {/* Separator */}
+          <td className="p-1 border-l border-gray-600"></td>
+          {/* Separator */}
           {asciiChars}
-        </tr>
+          </tr>
       );
     }
     return rows;
@@ -135,25 +131,21 @@ const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAdd
       </div>
       <div className="overflow-x-auto max-h-96 relative">
         <table className="w-full border-collapse" aria-label="Memory content">
-          <thead className="sticky top-0 bg-gray-800 z-10">
-            <tr>
-              <th scope="col" className="p-1 font-mono text-xs text-left text-gray-400 sticky left-0 bg-gray-800">Addr</th>
-              {Array.from({ length: BYTES_PER_ROW }).map((_, i) => (
-                <th scope="col" key={i} className="p-1 font-mono text-xs text-center text-gray-400 w-8">
-                  {i.toString(16).toUpperCase()}
-                </th>
-              ))}
-              <th scope="col" className="p-1 border-l border-gray-600" aria-hidden="true"></th> {/* Separator */}
-              {Array.from({ length: BYTES_PER_ROW }).map((_, i) => (
-                <th scope="col" key={`asc-head-${i}`} className="p-1 font-mono text-xs text-center text-gray-400 w-4" aria-label={`ASCII character ${i}`}>
-                  {/* ASCII Header can be minimal, screen readers will read byte values */}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {renderMemoryRows()}
-          </tbody>
+            <thead className="sticky top-0 bg-gray-800 z-10">
+                <tr>
+                    <th scope="col" className="p-1 font-mono text-xs text-left text-gray-400 sticky left-0 bg-gray-800">Addr</th>
+                    {Array.from({ length: BYTES_PER_ROW }).map((_, i) => (
+                    <th scope="col" key={i} className="p-1 font-mono text-xs text-center text-gray-400 w-8">{i.toString(16).toUpperCase()}</th>
+                    ))}
+                    <th scope="col" className="p-1 border-l border-gray-600" aria-hidden="true"></th>
+                    {Array.from({ length: BYTES_PER_ROW }).map((_, i) => (
+                    <th scope="col" key={`asc-head-${i}`} className="p-1 font-mono text-xs text-center text-gray-400 w-4"></th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {renderMemoryRows()}
+            </tbody>
         </table>
       </div>
     </div>
