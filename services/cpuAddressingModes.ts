@@ -20,7 +20,7 @@ export const fetchWord = (cpu: CPUState, memory: Uint8Array): number => {
 
 export const IMP = null; // Implied or Accumulator - no address needed or handled by instruction
 
-export const IMM = (cpu: CPUState, memory: Uint8Array): { address: number } => {
+export const IMM = (cpu: CPUState): { address: number } => {
   const address = cpu.PC; // Address of the immediate value itself
   cpu.PC = (cpu.PC + 1) & 0xFFFF;
   return { address };

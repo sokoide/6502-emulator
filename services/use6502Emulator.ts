@@ -1,8 +1,8 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { CPUState, Flag, InstructionInfo, LogEntry, InstructionDefinition } from '../types';
-import { MEMORY_SIZE, DEFAULT_PROGRAM_LOAD_ADDRESS, RESET_VECTOR_ADDRESS, STACK_BASE } from '../constants';
-import { instructionSet, getInstructionDefinition } from './cpuInstructions';
+import { CPUState, Flag, InstructionInfo, LogEntry } from '../types';
+import { MEMORY_SIZE, DEFAULT_PROGRAM_LOAD_ADDRESS, RESET_VECTOR_ADDRESS} from '../constants';
+import { getInstructionDefinition } from './cpuInstructions';
 import * as AM from './cpuAddressingModes';
 
 const initialCPUState: CPUState = {
@@ -23,7 +23,7 @@ export const use6502Emulator = () => {
   const addLog = useCallback((message: string, type: LogEntry['type'] = 'info') => {
     setLogs(prev => [{ id: logIdCounter.current++, message, type, timestamp: new Date() }, ...prev.slice(0, 99)]);
   }, []);
-  
+
   const resetCPU = useCallback((loadAddress?: number) => {
     // Try to read reset vector if memory is initialized, otherwise default
     let startPC = loadAddress ?? DEFAULT_PROGRAM_LOAD_ADDRESS;
@@ -48,7 +48,7 @@ export const use6502Emulator = () => {
     const newMemory = new Uint8Array(MEMORY_SIZE);
     // Simple hex string parser (e.g., "A9 01 8D 00 02")
     const bytes = hexString.trim().split(/\s+/).map(s => parseInt(s, 16));
-    
+
     if (bytes.some(isNaN)) {
         addLog("Error parsing hex string. Contains invalid characters.", 'error');
         return;
@@ -79,7 +79,7 @@ export const use6502Emulator = () => {
         addLog(`Memory access error at PC $${currentPC.toString(16)}`, 'error');
         return { ...prevCpu, halted: true };
       }
-      
+
       const newCpu = { ...prevCpu, PC: (prevCpu.PC + 1) & 0xFFFF }; // Increment PC for opcode
 
       const instructionDef = getInstructionDefinition(opCode);
@@ -88,7 +88,7 @@ export const use6502Emulator = () => {
         addLog(`Unknown opcode $${opCode.toString(16).toUpperCase().padStart(2, '0')} at $${currentPC.toString(16).toUpperCase().padStart(4, '0')}. Halting.`, 'error');
         return { ...newCpu, PC: currentPC, halted: true }; // Revert PC if opcode invalid
       }
-      
+
       let operandAddress: number = 0; // For implied/accumulator, this is not used directly by memory access
       let pageCrossed = false;
 
@@ -106,7 +106,7 @@ export const use6502Emulator = () => {
 
       // Execute instruction
       instructionDef.execute(newCpu, memory, operandAddress, pageCrossed);
-      
+
       // Update cycles
       newCpu.cycles += instructionDef.baseCycles;
       if (instructionDef.pageCrossCycle && pageCrossed) {
@@ -126,7 +126,7 @@ export const use6502Emulator = () => {
     for (let i = 0; i < count && currentAddress < MEMORY_SIZE; i++) {
       const opCode = memory[currentAddress];
       const instructionDef = getInstructionDefinition(opCode);
-      
+
       let text = ` ???`;
       let bytes: number[] = [opCode];
       let mnemonic = "???";
@@ -136,7 +136,7 @@ export const use6502Emulator = () => {
       if (instructionDef) {
         mnemonic = instructionDef.mnemonic;
         instructionBytesLength = instructionDef.bytes;
-        
+
         // Gather operand bytes for display
         for(let j=1; j < instructionDef.bytes; j++) {
             if (currentAddress + j < MEMORY_SIZE) {
@@ -167,7 +167,7 @@ export const use6502Emulator = () => {
       } else {
          text = `DB $${opCode.toString(16).padStart(2, '0')}`; // Data Byte if unknown opcode
       }
-      
+
       disassembly.push({
         address: currentAddress,
         opCode,
@@ -184,7 +184,7 @@ export const use6502Emulator = () => {
   const readMemoryByte = useCallback((address: number): number => {
     return memory[address & 0xFFFF];
   }, [memory]);
-  
+
   const writeMemoryByte = useCallback((address: number, value: number) => {
     setMemory(prevMem => {
       const newMem = new Uint8Array(prevMem);
