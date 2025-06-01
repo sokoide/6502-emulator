@@ -57,7 +57,7 @@ const ADC: ExecuteFunc = (cpu, memory, address) => {
   const value = memory[address];
   const carry = (cpu.P & Flag.C) ? 1 : 0;
   const temp = cpu.A + value + carry;
-  
+
   // Overflow: if signs of operands are same and sign of result is different
   // Or more simply: ((A ^ result) & (value ^ result) & 0x80)
   if (!((cpu.A ^ value) & 0x80) && ((cpu.A ^ temp) & 0x80)) {
@@ -65,7 +65,7 @@ const ADC: ExecuteFunc = (cpu, memory, address) => {
   } else {
     cpu.P &= ~Flag.V;
   }
-  
+
   // Decimal mode not implemented, treat as binary
   cpu.A = temp & 0xFF;
   setZNC(cpu, cpu.A, temp > 0xFF);
@@ -81,14 +81,14 @@ const SBC: ExecuteFunc = (cpu, memory, address) => {
   } else {
     cpu.P &= ~Flag.V;
   }
-  
+
   cpu.A = temp & 0xFF;
   setZNC(cpu, cpu.A, temp > 0xFF); // Carry is set if no borrow occurred
 };
 
-const genericBranch = (cpu: CPUState, memory: Uint8Array, relativeOffsetAddress: number, condition: boolean) => {
+// relativeOffset: -128 to +127
+const genericBranch = (cpu: CPUState, memory: Uint8Array, relativeOffset: number, condition: boolean) => {
     if (condition) {
-        const relativeOffset = memory[relativeOffsetAddress]; // already signed by AM.REL
         const oldPC = cpu.PC;
         cpu.PC = (cpu.PC + relativeOffset) & 0xFFFF;
         cpu.cycles++; // Branch taken adds a cycle
@@ -254,7 +254,7 @@ const BRK: ExecuteFunc = (cpu, memory, _address) => {
   pushByte(cpu, memory, cpu.P | Flag.B | Flag.U);
   cpu.P |= Flag.I;
   // In a real system, PC would be loaded from $FFFE/$FFFF. Here, we just halt.
-  cpu.halted = true; 
+  cpu.halted = true;
 };
 
 // --- Instruction Table ---
