@@ -161,24 +161,25 @@ const CpuControls: React.FC<CpuControlsProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-        <div className="relative col-span-1" ref={sampleMenuRef}>
+      {/* Combined button row */}
+      <div className="flex flex-row flex-wrap items-start gap-3 mb-4">
+        <div className="relative flex-1" ref={sampleMenuRef}> {/* Wrapper for Load Sample button and its dropdown, now with flex-1 */}
           <ControlButton
             onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
             color="purple"
-            className="w-full"
             aria-haspopup="true"
+            className="w-full" // Ensure button fills its flex-1 parent
             aria-expanded={isSampleMenuOpen}
           >
-            Load Sample Program &#x25BC;
+            Sample &#x25BC;
           </ControlButton>
           {isSampleMenuOpen && (
-            <div className="absolute z-10 mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-10 mt-1 w-56 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"> {/* Adjusted width for dropdown */}
               {samplePrograms.map((sample, index) => (
                 <button
                   key={index}
                   onClick={() => handleLoadSample(sample)}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-purple-600 hover:text-white"
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-purple-600 hover:text-white whitespace-nowrap"
                   role="menuitem"
                 >
                   {sample.name}
@@ -187,14 +188,12 @@ const CpuControls: React.FC<CpuControlsProps> = ({
             </div>
           )}
         </div>
-        <ControlButton onClick={handleLoadFromTextarea} color="indigo" className="w-full">Load from Textarea</ControlButton>
-        <ControlButton onClick={onReset} color="red" className="w-full">Reset CPU</ControlButton>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mb-4">
-        <ControlButton onClick={onStep} color="green" disabled={isRunning || isHalted} className="w-full">Step</ControlButton>
-        <ControlButton onClick={handleRunToggle} color={isRunning ? "yellow" : "teal"} disabled={isHalted} className="w-full">
+        <ControlButton onClick={handleLoadFromTextarea} color="indigo" className="flex-1">Load Text</ControlButton>
+        <ControlButton onClick={onStep} color="green" disabled={isRunning || isHalted} className="flex-1">Step</ControlButton>
+        <ControlButton onClick={handleRunToggle} color={isRunning ? "yellow" : "teal"} disabled={isHalted} className="flex-1">
           {isRunning ? 'Pause' : 'Run'}
         </ControlButton>
+        <ControlButton onClick={onReset} color="red" className="flex-1">Reset</ControlButton>
       </div>
 
 

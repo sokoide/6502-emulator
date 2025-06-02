@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { InstructionInfo } from '../types';
 
 interface DisassemblyViewProps {
@@ -7,15 +6,37 @@ interface DisassemblyViewProps {
   currentPC: number;
 }
 
+// Define a fixed height for the scrollable area.
+// h-96 is 24rem (384px). This can be adjusted as needed.
+const SCROLLABLE_AREA_HEIGHT_CLASS = "h-96";
+
 const DisassemblyView: React.FC<DisassemblyViewProps> = ({ instructions, currentPC }) => {
+  const activeInstructionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeInstructionRef.current) {
+      activeInstructionRef.current.scrollIntoView({
+        behavior: 'auto', // Use 'auto' for less jumpiness during rapid steps, 'smooth' for animation
+        block: 'nearest',   // Scrolls the minimum necessary to bring it into view. Other options: 'center', 'start', 'end'
+      });
+    }
+  }, [currentPC, instructions]); // Rerun when PC or the list of instructions changes
+
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-md h-full">
+    // Removed h-full. The component's height will now be determined by its content:
+    // (padding + title height + fixed scrollable area height).
+    <div className="bg-gray-800 p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-3 text-gray-200 border-b border-gray-700 pb-2">Disassembly</h2>
-      <div className="font-mono text-sm overflow-y-auto h-[calc(100%-3rem)]"> {/* Adjust height as needed */}
-        {instructions.map((inst, index) => (
-          <div 
-            key={index} 
-            className={`p-1 whitespace-pre flex ${inst.address === currentPC ? 'bg-blue-700 text-white rounded' : 'hover:bg-gray-700'}`}
+      <div className={`font-mono text-sm overflow-y-auto ${SCROLLABLE_AREA_HEIGHT_CLASS} custom-scrollbar`}>
+        {instructions.map((inst) => (
+          <div
+            key={inst.address} // Assuming inst.address is unique for each instruction in the list
+            ref={inst.address === currentPC ? activeInstructionRef : null}
+            className={`p-1 whitespace-pre flex ${
+              inst.address === currentPC
+                ? 'bg-blue-700 text-white rounded'
+                : 'hover:bg-gray-700'
+            }`}
           >
             <span className="text-purple-300 w-16">${inst.address.toString(16).toUpperCase().padStart(4, '0')}:</span>
             <span className="text-gray-500 w-24">

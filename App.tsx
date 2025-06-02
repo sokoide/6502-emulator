@@ -33,10 +33,19 @@ const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Load default program on initial mount
 
+  // Constants for disassembly view
+  const AVG_INST_LENGTH_ESTIMATE = 2.5; // Average bytes per instruction (heuristic)
+  const DISASSEMBLY_LINES_BEFORE_PC = 15; // Number of instruction lines to try to show before current PC
+  const DISASSEMBLY_LINES_AFTER_PC = 35;  // Number of instruction lines to try to show after current PC
+  const TOTAL_DISASSEMBLY_LINES = DISASSEMBLY_LINES_BEFORE_PC + DISASSEMBLY_LINES_AFTER_PC;
+
   useEffect(() => {
     if (cpu.PC !== undefined && memory.length > 0) {
       try {
-        const instructions = disassemble(cpu.PC, 20); // Disassemble 20 instructions from PC
+        // Calculate a start address to provide context before the current PC
+        const estimatedBytesBeforePC = Math.floor(DISASSEMBLY_LINES_BEFORE_PC * AVG_INST_LENGTH_ESTIMATE);
+        const startDisassembleAddress = Math.max(0, cpu.PC - estimatedBytesBeforePC);
+        const instructions = disassemble(startDisassembleAddress, TOTAL_DISASSEMBLY_LINES);
         setDisassembledCode(instructions);
       } catch (error) {
         console.error("Disassembly error:", error);
