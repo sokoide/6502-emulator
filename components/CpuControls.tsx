@@ -119,7 +119,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 border-b border-gray-700 pb-2">Controls</h2>
+      <h2 className="text-lg font-semibold mb-4 text-gray-200">Controls</h2>
 
       <div className="mb-4">
         <div className="flex justify-between items-center mb-1">
@@ -146,23 +146,44 @@ const CpuControls: React.FC<CpuControlsProps> = ({
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="loadAddress" className="block text-sm font-medium text-gray-300 mb-1">
-          Load Address (hex):
-        </label>
-        <input
-          type="text"
-          id="loadAddress"
-          className="w-full p-2 font-mono text-sm bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          value={loadAddress.toUpperCase()}
-          onChange={(e) => setLoadAddress(e.target.value)}
-          placeholder="0200"
-          aria-label="Load Address Input"
-        />
+      <div className="flex flex-row flex-wrap items-start gap-3 mb-4">
+        <div className="mb-4">
+          <label htmlFor="loadAddress" className="block text-sm font-medium text-gray-300 mb-1">
+            Load Address (hex):
+          </label>
+          <input
+            type="text"
+            id="loadAddress"
+            className="w-full p-2 font-mono text-sm bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            value={loadAddress.toUpperCase()}
+            onChange={(e) => setLoadAddress(e.target.value)}
+            placeholder="0200"
+            aria-label="Load Address Input"
+          />
+        </div>
+
+        <div className="flex-1">
+          <label htmlFor="runSpeed" className="block text-sm font-medium text-gray-300 mb-1">
+            Run Speed (steps/sec): {runSpeed}
+          </label>
+          <input
+            type="range"
+            id="runSpeed"
+            min="1"
+            max="1000"
+            step="1"
+            value={runSpeed}
+            onChange={(e) => onSetRunSpeed(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+            disabled={isRunning}
+            aria-label="Run Speed Control"
+          />
+          <div className="text-xs text-gray-400 flex justify-between"><span>Slow (1)</span> <span>Fast (1000)</span></div>
+        </div>
       </div>
 
       {/* Combined button row */}
-      <div className="flex flex-row flex-wrap items-start gap-3 mb-4">
+      <div className="flex flex-row flex-wrap items-start gap-3">
         <div className="relative flex-1" ref={sampleMenuRef}> {/* Wrapper for Load Sample button and its dropdown, now with flex-1 */}
           <ControlButton
             onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
@@ -194,26 +215,6 @@ const CpuControls: React.FC<CpuControlsProps> = ({
           {isRunning ? 'Pause' : 'Run'}
         </ControlButton>
         <ControlButton onClick={onReset} color="red" className="flex-1">Reset</ControlButton>
-      </div>
-
-
-      <div>
-        <label htmlFor="runSpeed" className="block text-sm font-medium text-gray-300 mb-1">
-          Run Speed (steps/sec): {runSpeed}
-        </label>
-        <input
-          type="range"
-          id="runSpeed"
-          min="1"
-          max="1000"
-          step="1"
-          value={runSpeed}
-          onChange={(e) => onSetRunSpeed(parseInt(e.target.value))}
-          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-          disabled={isRunning}
-          aria-label="Run Speed Control"
-        />
-        <div className="text-xs text-gray-400 flex justify-between"><span>Slow (1)</span> <span>Fast (1000)</span></div>
       </div>
     </div>
   );

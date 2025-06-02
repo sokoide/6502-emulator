@@ -7,8 +7,8 @@ interface DisassemblyViewProps {
 }
 
 // Define a fixed height for the scrollable area.
-// h-96 is 24rem (384px). This can be adjusted as needed.
-const SCROLLABLE_AREA_HEIGHT_CLASS = "h-96";
+// h-72 corresponds to 18rem in Tailwind CSS, pixel equivalent is 288px.
+const SCROLLABLE_AREA_HEIGHT_CLASS = "h-72";
 
 const DisassemblyView: React.FC<DisassemblyViewProps> = ({ instructions, currentPC }) => {
   const activeInstructionRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ const DisassemblyView: React.FC<DisassemblyViewProps> = ({ instructions, current
     // Removed h-full. The component's height will now be determined by its content:
     // (padding + title height + fixed scrollable area height).
     <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-3 text-gray-200 border-b border-gray-700 pb-2">Disassembly</h2>
+      <h2 className="text-lg font-semibold mb-3 text-gray-200">Disassembly</h2>
       <div className={`font-mono text-sm overflow-y-auto ${SCROLLABLE_AREA_HEIGHT_CLASS} custom-scrollbar`}>
         {instructions.map((inst) => (
           <div

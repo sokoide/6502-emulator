@@ -130,11 +130,11 @@ const App: React.FC = () => {
       />
 
       <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-        <div className="md:w-1/3 lg:w-1/4 flex flex-col space-y-4">
+        <div className="md:w-2/5 lg:w-1/3 flex flex-col space-y-4"> {/* Adjusted width for left column */}
           <CpuRegistersView cpu={cpu} />
           <CpuFlagsView cpu={cpu} />
         </div>
-        <div className="md:w-2/3 lg:w-3/4">
+        <div className="md:w-3/5 lg:w-2/3"> {/* Adjusted width for right column */}
           <DisassemblyView instructions={disassembledCode} currentPC={cpu.PC} />
         </div>
       </div>

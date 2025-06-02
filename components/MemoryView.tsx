@@ -105,8 +105,8 @@ const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAdd
 
     return (
         <div className="bg-gray-800 p-4 rounded-lg shadow-md mt-4">
-            <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-                <h2 className="text-xl font-semibold text-gray-200">Memory View</h2>
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-semibold text-gray-200">Memory View</h2>
                 <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-400">Go to: $</span>
                     <input
