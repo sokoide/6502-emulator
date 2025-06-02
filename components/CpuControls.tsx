@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SIMPLE_PROGRAM_HEX, DEFAULT_PROGRAM_LOAD_ADDRESS } from '../constants';
-
+import { ClipboardPaste } from 'lucide-react'
 interface CpuControlsProps {
   onLoadProgram: (hexString: string, loadAddress: number) => void;
   onReset: () => void;
@@ -87,6 +87,21 @@ const CpuControls: React.FC<CpuControlsProps> = ({
     setIsSampleMenuOpen(false);
   };
 
+  const handleClearAndPaste = useCallback(async () => {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      alert('Clipboard API is not available in this browser or context.');
+      return;
+    }
+    try {
+      const text = await navigator.clipboard.readText();
+      setHexCode(text);
+    } catch (err) {
+      console.error('Failed to read clipboard contents:', err);
+      // Inform the user that pasting failed, possibly due to permissions or empty clipboard
+      alert('Failed to paste from clipboard. Please ensure you have granted permission and copied text.');
+    }
+  }, [setHexCode]);
+
   // Close sample menu if clicked outside
   // Fixed: Import useEffect from react
   useEffect(() => {
@@ -107,9 +122,19 @@ const CpuControls: React.FC<CpuControlsProps> = ({
       <h2 className="text-xl font-semibold mb-4 text-gray-200 border-b border-gray-700 pb-2">Controls</h2>
 
       <div className="mb-4">
-        <label htmlFor="hexCode" className="block text-sm font-medium text-gray-300 mb-1">
-          Program Hex Code:
-        </label>
+        <div className="flex justify-between items-center mb-1">
+          <label htmlFor="hexCode" className="block text-sm font-medium text-gray-300">
+            Program Hex Code:
+          </label>
+          <button
+            type="button"
+            onClick={handleClearAndPaste}
+            className="p-1 text-xs bg-gray-600 hover:bg-gray-500 text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            title="Clear and Paste from Clipboard"
+          >
+              <ClipboardPaste size={24} />
+          </button>
+        </div>
         <textarea
           id="hexCode"
           rows={3}

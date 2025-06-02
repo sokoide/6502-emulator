@@ -7,6 +7,9 @@ export default defineConfig(({ mode }) => {
     base: '/6502-emulator/',
     define: {
     },
+    server: {
+      port: parseInt(env.VITE_PORT) || 5174,
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
