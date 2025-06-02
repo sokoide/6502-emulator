@@ -108,7 +108,7 @@ const CpuControls: React.FC<CpuControlsProps> = ({
 
       <div className="mb-4">
         <label htmlFor="hexCode" className="block text-sm font-medium text-gray-300 mb-1">
-          Program Hex Code (space separated bytes):
+          Program Hex Code:
         </label>
         <textarea
           id="hexCode"

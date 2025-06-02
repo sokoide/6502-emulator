@@ -46,8 +46,8 @@ export const use6502Emulator = () => {
 
   const loadProgram = useCallback((hexString: string, loadAddr: number = DEFAULT_PROGRAM_LOAD_ADDRESS) => {
     const newMemory = new Uint8Array(MEMORY_SIZE);
-    // Simple hex string parser (e.g., "A9 01 8D 00 02")
-    const bytes = hexString.trim().split(/\s+/).map(s => parseInt(s, 16));
+    hexString = hexString.replace(/\s+/g, ''); // Remove whitespace
+    const bytes = Array.from({ length: hexString.length / 2 }, (_, i) => hexString.slice(i * 2, i * 2 + 2)).map(s => parseInt(s, 16));
 
     if (bytes.some(isNaN)) {
       addLog("Error parsing hex string. Contains invalid characters.", 'error');

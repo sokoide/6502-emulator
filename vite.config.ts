@@ -6,8 +6,6 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/6502-emulator/',
     define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
     },
     resolve: {
       alias: {
