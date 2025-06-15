@@ -146,22 +146,42 @@ export const use6502Emulator = () => {
           }
         }
 
-        // Format operand string (simplified)
-        // This is a very basic disassembler for operand formatting.
-        // A proper one would use the addressing mode logic.
+        // Format operand string based on addressing mode
         if (instructionDef.bytes === 2) {
           const operand = memory[currentAddress + 1];
-          if (instructionDef.addressingMode === AM.IMM) operandStr = `#$${operand.toString(16).padStart(2, '0')}`;
-          else if (instructionDef.addressingMode === AM.REL) {
+          if (instructionDef.addressingMode === AM.IMM) {
+            operandStr = `#$${operand.toString(16).padStart(2, '0')}`;
+          } else if (instructionDef.addressingMode === AM.REL) {
             const relAddr = (currentAddress + 2 + (operand > 127 ? operand - 256 : operand)) & 0xFFFF;
             operandStr = `$${relAddr.toString(16).padStart(4, '0')}`;
+          } else if (instructionDef.addressingMode === AM.ZP) {
+            operandStr = `$${operand.toString(16).padStart(2, '0')}`;
+          } else if (instructionDef.addressingMode === AM.ZPX) {
+            operandStr = `$${operand.toString(16).padStart(2, '0')},X`;
+          } else if (instructionDef.addressingMode === AM.ZPY) {
+            operandStr = `$${operand.toString(16).padStart(2, '0')},Y`;
+          } else if (instructionDef.addressingMode === AM.IZX) {
+            operandStr = `($${operand.toString(16).padStart(2, '0')},X)`;
+          } else if (instructionDef.addressingMode === AM.IZY) {
+            operandStr = `($${operand.toString(16).padStart(2, '0')}),Y`;
+          } else {
+            operandStr = `$${operand.toString(16).padStart(2, '0')}`;
           }
-          else operandStr = `$${operand.toString(16).padStart(2, '0')}`;
         } else if (instructionDef.bytes === 3) {
           const operandLow = memory[currentAddress + 1];
           const operandHigh = memory[currentAddress + 2];
           const operandWord = (operandHigh << 8) | operandLow;
-          operandStr = `$${operandWord.toString(16).padStart(4, '0')}`;
+          if (instructionDef.addressingMode === AM.ABS) {
+            operandStr = `$${operandWord.toString(16).padStart(4, '0')}`;
+          } else if (instructionDef.addressingMode === AM.ABSX) {
+            operandStr = `$${operandWord.toString(16).padStart(4, '0')},X`;
+          } else if (instructionDef.addressingMode === AM.ABSY) {
+            operandStr = `$${operandWord.toString(16).padStart(4, '0')},Y`;
+          } else if (instructionDef.addressingMode === AM.IND) {
+            operandStr = `($${operandWord.toString(16).padStart(4, '0')})`;
+          } else {
+            operandStr = `$${operandWord.toString(16).padStart(4, '0')}`;
+          }
         }
         text = `${instructionDef.mnemonic} ${operandStr}`;
       } else {
