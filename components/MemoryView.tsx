@@ -6,12 +6,14 @@ interface MemoryViewProps {
     memory: Uint8Array;
     highlightAddress?: number;
     pcAddress?: number;
+    jumpToAddress?: number | null;
+    onAddressJumped?: () => void;
 }
 
 const BYTES_PER_ROW = 16;
 const NUM_ROWS = 16; // Display 16 rows (256 bytes) at a time
 
-const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAddress }) => {
+const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAddress, jumpToAddress, onAddressJumped }) => {
     const [startAddress, setStartAddress] = useState(0x0000); // Default start address
     const [inputAddress, setInputAddress] = useState("0000"); // Default input address field
     const isInitialMount = useRef(true);
@@ -47,6 +49,17 @@ const MemoryView: React.FC<MemoryViewProps> = ({ memory, highlightAddress, pcAdd
         // }
     }, [pcAddress]); // Only re-run if pcAddress changes, to preserve manual navigation
 
+    // Jump to load address when a program is loaded
+    useEffect(() => {
+        if (jumpToAddress !== null && jumpToAddress !== undefined) {
+            const alignedAddress = Math.floor(jumpToAddress / BYTES_PER_ROW) * BYTES_PER_ROW;
+            setStartAddress(alignedAddress);
+            setInputAddress(alignedAddress.toString(16).padStart(4, '0').toUpperCase());
+            if (onAddressJumped) {
+                onAddressJumped();
+            }
+        }
+    }, [jumpToAddress, onAddressJumped]);
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputAddress(e.target.value.toUpperCase());

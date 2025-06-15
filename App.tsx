@@ -25,6 +25,7 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [runSpeed, setRunSpeed] = useState(100); // Steps per second
   const [disassembledCode, setDisassembledCode] = useState<InstructionInfo[]>([]);
+  const [lastLoadAddress, setLastLoadAddress] = useState<number | null>(null);
 
   const runIntervalRef = useRef<number | null>(null);
 
@@ -35,8 +36,8 @@ const App: React.FC = () => {
 
   // Constants for disassembly view
   const AVG_INST_LENGTH_ESTIMATE = 2.5; // Average bytes per instruction (heuristic)
-  const DISASSEMBLY_LINES_BEFORE_PC = 15; // Number of instruction lines to try to show before current PC
-  const DISASSEMBLY_LINES_AFTER_PC = 35;  // Number of instruction lines to try to show after current PC
+  const DISASSEMBLY_LINES_BEFORE_PC = 64; // Number of instruction lines to try to show before current PC
+  const DISASSEMBLY_LINES_AFTER_PC = 192;  // Number of instruction lines to try to show after current PC
   const TOTAL_DISASSEMBLY_LINES = DISASSEMBLY_LINES_BEFORE_PC + DISASSEMBLY_LINES_AFTER_PC;
 
   useEffect(() => {
@@ -104,6 +105,7 @@ const App: React.FC = () => {
   const handleLoadProgram = (hex: string, addr: number) => {
     if (isRunning) handleRun(false); // Stop running if loading new program
     loadProgram(hex, addr);
+    setLastLoadAddress(addr); // Track the load address for memory view
   };
 
   const handleReset = () => {
@@ -139,7 +141,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <MemoryView memory={memory} pcAddress={cpu.PC} />
+      <MemoryView memory={memory} pcAddress={cpu.PC} jumpToAddress={lastLoadAddress} onAddressJumped={() => setLastLoadAddress(null)} />
       <LogView logs={logs} />
 
       <footer className="text-center text-sm text-gray-500 pt-4 border-t border-gray-700">
