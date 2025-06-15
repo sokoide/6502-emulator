@@ -434,7 +434,7 @@ define(0xF8, "SED", AM.IMP, SED, 1, 2);
 define(0xB8, "CLV", AM.IMP, CLV, 1, 2);
 // System
 define(0xEA, "NOP", AM.IMP, NOP, 1, 2);
-define(0x00, "BRK", AM.IMP, BRK, 1, 7); // Bytes is 1, but fetches padding byte effectively making it 2
+define(0x00, "BRK", AM.IMP, BRK, 2, 7); // BRK has a padding byte
 // Some common NOPs (often unofficial)
 define(0x1A, "NOP*", AM.IMP, NOP, 1, 2);
 define(0x3A, "NOP*", AM.IMP, NOP, 1, 2);

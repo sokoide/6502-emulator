@@ -65,16 +65,10 @@ const App: React.FC = () => {
 
   const handleRun = useCallback((shouldRun: boolean) => {
     setIsRunning(shouldRun);
-    if (shouldRun && !cpu.halted) {
+    if (shouldRun) {
       if (runIntervalRef.current) clearInterval(runIntervalRef.current);
       const intervalTime = Math.max(1, 1000 / runSpeed); // Ensure interval is at least 1ms
       runIntervalRef.current = window.setInterval(() => {
-        if (cpu.halted) { // Check halt state inside interval as well
-          setIsRunning(false);
-          if (runIntervalRef.current) clearInterval(runIntervalRef.current);
-          addLog("CPU halted during run.", "warn");
-          return;
-        }
         step();
       }, intervalTime);
     } else {
@@ -83,7 +77,7 @@ const App: React.FC = () => {
         runIntervalRef.current = null;
       }
     }
-  }, [step, runSpeed, cpu.halted, addLog]);
+  }, [step, runSpeed]);
 
   // Cleanup interval on component unmount or when isRunning/runSpeed changes
   useEffect(() => {
@@ -94,13 +88,20 @@ const App: React.FC = () => {
     };
   }, []);
 
+  // Stop running if CPU is halted
+  useEffect(() => {
+    if (isRunning && cpu.halted) {
+      handleRun(false);
+      addLog("CPU halted during run.", "warn");
+    }
+  }, [cpu.halted, isRunning, handleRun, addLog]);
+
   // Adjust running interval if speed changes while running
   useEffect(() => {
     if (isRunning && !cpu.halted) {
       handleRun(true); // Restart with new speed
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runSpeed]); // Only re-run if runSpeed changes. handleRun has other deps.
+  }, [runSpeed, isRunning, cpu.halted, handleRun]);
 
   const handleLoadProgram = (hex: string, addr: number) => {
     if (isRunning) handleRun(false); // Stop running if loading new program

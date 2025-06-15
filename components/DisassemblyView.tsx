@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { InstructionInfo } from '../types';
 
 interface DisassemblyViewProps {
@@ -39,7 +39,7 @@ const DisassemblyView: React.FC<DisassemblyViewProps> = ({ instructions, current
             </span>
             <span className={`${inst.mnemonic === "???" ? 'text-red-400' : 'text-green-300'} w-12`}>{inst.mnemonic}</span>
             <span className="text-yellow-300">
-              {inst.addressingMode ? `${inst.operandStr} ${inst.addressingMode}` : inst.operandStr}
+              {inst.operandStr}
             </span>
           </div>
         ))}
@@ -48,4 +48,4 @@ const DisassemblyView: React.FC<DisassemblyViewProps> = ({ instructions, current
   );
 };
 
-export default DisassemblyView;
+export default memo(DisassemblyView);

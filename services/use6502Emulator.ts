@@ -47,6 +47,12 @@ export const use6502Emulator = () => {
   const loadProgram = useCallback((hexString: string, loadAddr: number = DEFAULT_PROGRAM_LOAD_ADDRESS) => {
     const newMemory = new Uint8Array(MEMORY_SIZE);
     hexString = hexString.replace(/\s+/g, ''); // Remove whitespace
+    
+    if (hexString.length % 2 !== 0) {
+      addLog("Error parsing hex string. Must have even number of characters.", 'error');
+      return;
+    }
+    
     const bytes = Array.from({ length: hexString.length / 2 }, (_, i) => hexString.slice(i * 2, i * 2 + 2)).map(s => parseInt(s, 16));
 
     if (bytes.some(isNaN)) {
@@ -65,58 +71,64 @@ export const use6502Emulator = () => {
   }, [resetCPU, addLog]);
 
   const step = useCallback(() => {
-    setCPU(prevCpu => {
-      if (prevCpu.halted) {
-        // addLog("CPU halted.", 'warn'); // This can be spammy
-        return prevCpu;
-      }
+    setMemory(prevMemory => {
+      const newMemory = new Uint8Array(prevMemory); // Create a copy for React to detect changes
+      
+      setCPU(prevCpu => {
+        if (prevCpu.halted) {
+          // addLog("CPU halted.", 'warn'); // This can be spammy
+          return prevCpu;
+        }
 
-      const currentPC = prevCpu.PC;
-      let opCode: number;
-      try {
-        opCode = memory[currentPC];
-      } catch (e) {
-        addLog(`Memory access error at PC $${currentPC.toString(16)}`, 'error');
-        return { ...prevCpu, halted: true };
-      }
+        const currentPC = prevCpu.PC;
+        let opCode: number;
+        try {
+          opCode = newMemory[currentPC];
+        } catch (e) {
+          addLog(`Memory access error at PC $${currentPC.toString(16)}`, 'error');
+          return { ...prevCpu, halted: true };
+        }
 
-      const newCpu = { ...prevCpu, PC: (prevCpu.PC + 1) & 0xFFFF }; // Increment PC for opcode
+        const newCpu = { ...prevCpu, PC: (prevCpu.PC + 1) & 0xFFFF }; // Increment PC for opcode
 
-      const instructionDef = getInstructionDefinition(opCode);
+        const instructionDef = getInstructionDefinition(opCode);
 
-      if (!instructionDef) {
-        addLog(`Unknown opcode $${opCode.toString(16).toUpperCase().padStart(2, '0')} at $${currentPC.toString(16).toUpperCase().padStart(4, '0')}. Halting.`, 'error');
-        return { ...newCpu, PC: currentPC, halted: true }; // Revert PC if opcode invalid
-      }
+        if (!instructionDef) {
+          addLog(`Unknown opcode $${opCode.toString(16).toUpperCase().padStart(2, '0')} at $${currentPC.toString(16).toUpperCase().padStart(4, '0')}. Halting.`, 'error');
+          return { ...newCpu, PC: currentPC, halted: true }; // Revert PC if opcode invalid
+        }
 
-      let operandAddress: number = 0; // For implied/accumulator, this is not used directly by memory access
-      let pageCrossed = false;
+        let operandAddress: number = 0; // For implied/accumulator, this is not used directly by memory access
+        let pageCrossed = false;
 
-      // Resolve addressing mode
-      // The addressing mode functions in AM increment PC for their operands.
-      if (instructionDef.addressingMode) {
-        const addrResult = instructionDef.addressingMode(newCpu, memory);
-        operandAddress = addrResult.address;
-        pageCrossed = addrResult.pageCrossed || false;
-      } else {
-        // Implied or Accumulator mode
-        // For accumulator mode, operandAddress might be conceptually 'A'
-        // For implied, it's not used or specific to instruction (e.g. stack pointer for PHA)
-      }
+        // Resolve addressing mode
+        // The addressing mode functions in AM increment PC for their operands.
+        if (instructionDef.addressingMode) {
+          const addrResult = instructionDef.addressingMode(newCpu, newMemory);
+          operandAddress = addrResult.address;
+          pageCrossed = addrResult.pageCrossed || false;
+        } else {
+          // Implied or Accumulator mode
+          // For accumulator mode, operandAddress might be conceptually 'A'
+          // For implied, it's not used or specific to instruction (e.g. stack pointer for PHA)
+        }
 
-      // Execute instruction
-      instructionDef.execute(newCpu, memory, operandAddress, pageCrossed);
+        // Execute instruction
+        instructionDef.execute(newCpu, newMemory, operandAddress, pageCrossed);
 
-      // Update cycles
-      newCpu.cycles += instructionDef.baseCycles;
-      if (instructionDef.pageCrossCycle && pageCrossed) {
-        newCpu.cycles++;
-      }
-      // Branch cycle additions are handled within branch instructions themselves
+        // Update cycles
+        newCpu.cycles += instructionDef.baseCycles;
+        if (instructionDef.pageCrossCycle && pageCrossed) {
+          newCpu.cycles++;
+        }
+        // Branch cycle additions are handled within branch instructions themselves
 
-      return newCpu;
+        return newCpu;
+      });
+      
+      return newMemory;
     });
-  }, [memory, addLog]);
+  }, [addLog]);
 
 
   const disassemble = useCallback((startAddress: number, count: number): InstructionInfo[] => {
