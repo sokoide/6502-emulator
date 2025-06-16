@@ -43,9 +43,9 @@ const App: React.FC = () => {
   useEffect(() => {
     if (cpu.PC !== undefined && memory.length > 0) {
       try {
-        // Calculate a start address to provide context before the current PC
-        const estimatedBytesBeforePC = Math.floor(DISASSEMBLY_LINES_BEFORE_PC * AVG_INST_LENGTH_ESTIMATE);
-        const startDisassembleAddress = Math.max(0, cpu.PC - estimatedBytesBeforePC);
+        // Start disassembly from a fixed address to maintain instruction alignment
+        // This prevents misaligned disassembly when starting from estimated addresses
+        const startDisassembleAddress = DEFAULT_PROGRAM_LOAD_ADDRESS;
         const instructions = disassemble(startDisassembleAddress, TOTAL_DISASSEMBLY_LINES);
         setDisassembledCode(instructions);
       } catch (error) {
