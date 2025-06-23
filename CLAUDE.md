@@ -46,3 +46,120 @@ This is a web-based MOS Technology 6502 microprocessor emulator built with React
 - Reset vector: $FFFC-$FFFD
 
 The emulator supports loading custom programs via hex strings and provides comprehensive debugging views including registers, flags, memory, disassembly, and execution logs.
+
+# Development Guidelines
+
+## Error Handling Patterns
+
+- All errors must be wrapped with contextual information using `throw new Error("context: " + originalError.message)`
+- HTTP client libraries (e.g., `axios`) should use interceptors for retry logic and consistent error formatting
+- Authentication errors from Azure SDKs must be propagated clearly
+- Type and model conversion failures should be handled with null-safe operations (`?.` and optional chaining)
+
+### Package Management
+
+- **ONLY** use `npm` for dependency management (never mix it with `pnpm`)
+- All dependencies must have **explicit version pinning** in `package.json`
+- No implicit peer dependencies or version ranges (`^` or `~`)
+
+---
+
+### Code Quality Standards
+
+- All exported functions, classes, and interfaces must include **JSDoc comments**
+- Maximum line length: **100 characters**
+- Prefer `type` over `interface` unless extending other interfaces
+- Interfaces must be minimal and specific to their usage context
+- Avoid any usage of `any` type; prefer strict typing
+- ESLint must pass with no errors or warnings (`npm run lint`)
+- Use Prettier for formatting (`npm run format`)
+
+---
+
+### Testing Requirements
+
+- Every public function must be covered by comprehensive **unit tests**
+- Use mocks for Azure credentials and Graph API where applicable
+- Place mocks under `test/mocks/`
+- Use `jest` for unit and integration testing
+- Integration tests must use real Microsoft Graph credentials (via `.env`)
+- Use `ts-jest` for testing TypeScript directly
+- Target **80%+ code coverage** across all modules
+- Run tests with concurrency: `npm test -- --runInBand=false`
+
+---
+
+### Commit Guidelines
+
+- Follow **Conventional Commits** format (e.g., `feat:`, `fix:`, `chore:`)
+- Add commit trailers for issue tracking:
+  - Bug reports: `git commit --trailer "Reported-by:<name>"`
+  - GitHub issues: `git commit --trailer "Github-Issue:#<number>"`
+- **NEVER** reference AI tools or automated code generation in commit messages
+
+---
+
+### Pull Request Requirements
+
+- Every PR must include:
+  - Clear problem statement
+  - Explanation of the solution approach
+- Keep PRs **focused and minimal**
+# Development Guidelines
+
+## Error Handling Patterns
+
+- All errors must be wrapped with contextual information using `throw new Error("context: " + originalError.message)`
+- HTTP client libraries (e.g., `axios`) should use interceptors for retry logic and consistent error formatting
+- Authentication errors from Azure SDKs must be propagated clearly
+- Type and model conversion failures should be handled with null-safe operations (`?.` and optional chaining)
+
+### Package Management
+
+- **ONLY** use `npm` for dependency management (never mix it with `pnpm`)
+- All dependencies must have **explicit version pinning** in `package.json`
+- No implicit peer dependencies or version ranges (`^` or `~`)
+
+---
+
+### Code Quality Standards
+
+- All exported functions, classes, and interfaces must include **JSDoc comments**
+- Maximum line length: **100 characters**
+- Prefer `type` over `interface` unless extending other interfaces
+- Interfaces must be minimal and specific to their usage context
+- Avoid any usage of `any` type; prefer strict typing
+- ESLint must pass with no errors or warnings (`npm run lint`)
+- Use Prettier for formatting (`npm run format`)
+
+---
+
+### Testing Requirements
+
+- Every public function must be covered by comprehensive **unit tests**
+- Use mocks for Azure credentials and Graph API where applicable
+- Place mocks under `test/mocks/`
+- Use `jest` for unit and integration testing
+- Integration tests must use real Microsoft Graph credentials (via `.env`)
+- Use `ts-jest` for testing TypeScript directly
+- Target **80%+ code coverage** across all modules
+- Run tests with concurrency: `npm test -- --runInBand=false`
+
+---
+
+### Commit Guidelines
+
+- Follow **Conventional Commits** format (e.g., `feat:`, `fix:`, `chore:`)
+- Add commit trailers for issue tracking:
+  - Bug reports: `git commit --trailer "Reported-by:<name>"`
+  - GitHub issues: `git commit --trailer "Github-Issue:#<number>"`
+- **NEVER** reference AI tools or automated code generation in commit messages
+
+---
+
+### Pull Request Requirements
+
+- Every PR must include:
+  - Clear problem statement
+  - Explanation of the solution approach
+- Keep PRs **focused and minimal**
