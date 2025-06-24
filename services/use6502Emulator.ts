@@ -45,29 +45,57 @@ export const use6502Emulator = () => {
   }, [memory, addLog]);
 
   const loadProgram = useCallback((hexString: string, loadAddr: number = DEFAULT_PROGRAM_LOAD_ADDRESS) => {
-    const newMemory = new Uint8Array(MEMORY_SIZE);
-    hexString = hexString.replace(/\s+/g, ''); // Remove whitespace
-    
-    if (hexString.length % 2 !== 0) {
-      addLog("Error parsing hex string. Must have even number of characters.", 'error');
-      return;
-    }
-    
-    const bytes = Array.from({ length: hexString.length / 2 }, (_, i) => hexString.slice(i * 2, i * 2 + 2)).map(s => parseInt(s, 16));
-
-    if (bytes.some(isNaN)) {
-      addLog("Error parsing hex string. Contains invalid characters.", 'error');
-      return;
-    }
-
-    bytes.forEach((byte, index) => {
-      if (loadAddr + index < MEMORY_SIZE) {
-        newMemory[loadAddr + index] = byte;
+    try {
+      // Input validation
+      if (!hexString || typeof hexString !== 'string') {
+        addLog("Error: Invalid hex string provided.", 'error');
+        return;
       }
-    });
-    setMemory(newMemory);
-    resetCPU(loadAddr); // Reset CPU and set PC to load address
-    addLog(`Program loaded (${bytes.length} bytes) at $${loadAddr.toString(16).toUpperCase().padStart(4, '0')}.`, 'success');
+
+      if (loadAddr < 0 || loadAddr >= MEMORY_SIZE) {
+        addLog(`Error: Load address $${loadAddr.toString(16).toUpperCase()} is out of range.`, 'error');
+        return;
+      }
+
+      const newMemory = new Uint8Array(MEMORY_SIZE);
+      hexString = hexString.replace(/\s+/g, ''); // Remove whitespace
+      
+      if (hexString.length === 0) {
+        addLog("Error: Empty hex string provided.", 'error');
+        return;
+      }
+      
+      if (hexString.length % 2 !== 0) {
+        addLog("Error: Hex string must have even number of characters.", 'error');
+        return;
+      }
+      
+      const bytes = Array.from(
+        { length: hexString.length / 2 }, 
+        (_, i) => hexString.slice(i * 2, i * 2 + 2)
+      ).map(s => parseInt(s, 16));
+
+      if (bytes.some(isNaN)) {
+        addLog("Error: Hex string contains invalid characters. Only 0-9, A-F allowed.", 'error');
+        return;
+      }
+
+      // Check if program fits in memory
+      if (loadAddr + bytes.length > MEMORY_SIZE) {
+        addLog(`Error: Program too large. Would exceed memory bounds at $${(loadAddr + bytes.length - 1).toString(16).toUpperCase()}.`, 'error');
+        return;
+      }
+
+      bytes.forEach((byte, index) => {
+        newMemory[loadAddr + index] = byte;
+      });
+      
+      setMemory(newMemory);
+      resetCPU(loadAddr);
+      addLog(`Program loaded successfully (${bytes.length} bytes) at $${loadAddr.toString(16).toUpperCase().padStart(4, '0')}.`, 'success');
+    } catch (error) {
+      addLog(`Error loading program: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+    }
   }, [resetCPU, addLog]);
 
   const step = useCallback(() => {
@@ -78,13 +106,14 @@ export const use6502Emulator = () => {
       }
 
       const currentPC = prevCpu.PC;
-      let opCode: number;
-      try {
-        opCode = memory[currentPC];
-      } catch (e) {
-        addLog(`Memory access error at PC $${currentPC.toString(16)}`, 'error');
+      
+      // Validate PC is within valid range
+      if (currentPC < 0 || currentPC >= MEMORY_SIZE) {
+        addLog(`PC out of bounds: $${currentPC.toString(16).padStart(4, '0')}. Halting.`, 'error');
         return { ...prevCpu, halted: true };
       }
+      
+      const opCode = memory[currentPC];
 
       const newCpu = { ...prevCpu, PC: (prevCpu.PC + 1) & 0xFFFF }; // Increment PC for opcode
 
@@ -110,8 +139,13 @@ export const use6502Emulator = () => {
         // For implied, it's not used or specific to instruction (e.g. stack pointer for PHA)
       }
 
-      // Execute instruction
-      instructionDef.execute(newCpu, memory, operandAddress, pageCrossed);
+      // Execute instruction with error handling
+      try {
+        instructionDef.execute(newCpu, memory, operandAddress, pageCrossed);
+      } catch (error) {
+        addLog(`Instruction execution error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+        return { ...newCpu, halted: true };
+      }
 
       // Update cycles
       newCpu.cycles += instructionDef.baseCycles;
@@ -211,10 +245,20 @@ export const use6502Emulator = () => {
   }, [memory]);
 
   const readMemoryByte = useCallback((address: number): number => {
+    if (typeof address !== 'number' || address < 0) {
+      throw new Error(`Invalid memory read address: ${address}`);
+    }
     return memory[address & 0xFFFF];
   }, [memory]);
 
   const writeMemoryByte = useCallback((address: number, value: number) => {
+    if (typeof address !== 'number' || address < 0) {
+      throw new Error(`Invalid memory write address: ${address}`);
+    }
+    if (typeof value !== 'number' || value < 0 || value > 255) {
+      throw new Error(`Invalid memory write value: ${value}. Must be 0-255.`);
+    }
+    
     setMemory(prevMem => {
       const newMem = new Uint8Array(prevMem);
       newMem[address & 0xFFFF] = value & 0xFF;

@@ -4,31 +4,66 @@ import { CPUState, Flag, InstructionDefinition, ExecuteFunc, AddressingModeFunc 
 import * as AM from './cpuAddressingModes'; // AM for Addressing Modes
 import { STACK_BASE } from '../constants';
 
+/**
+ * Sets the Zero (Z) and Negative (N) flags based on the given value
+ * @param cpu - CPU state object to modify
+ * @param value - 8-bit value to test (0-255)
+ */
 const setZN = (cpu: CPUState, value: number) => {
   cpu.P = (value === 0) ? (cpu.P | Flag.Z) : (cpu.P & ~Flag.Z);
   cpu.P = (value & 0x80) ? (cpu.P | Flag.N) : (cpu.P & ~Flag.N);
 };
 
+/**
+ * Sets the Zero (Z), Negative (N), and Carry (C) flags
+ * @param cpu - CPU state object to modify
+ * @param value - 8-bit value to test for Z and N flags
+ * @param carry - Whether to set the carry flag
+ */
 const setZNC = (cpu: CPUState, value: number, carry: boolean) => {
   setZN(cpu, value);
   cpu.P = carry ? (cpu.P | Flag.C) : (cpu.P & ~Flag.C);
 };
 
+/**
+ * Pushes a byte onto the 6502 stack and decrements stack pointer
+ * @param cpu - CPU state object with stack pointer
+ * @param memory - Memory array
+ * @param value - 8-bit value to push
+ */
 const pushByte = (cpu: CPUState, memory: Uint8Array, value: number) => {
   memory[STACK_BASE + cpu.SP] = value;
   cpu.SP = (cpu.SP - 1) & 0xFF;
 };
 
+/**
+ * Pulls a byte from the 6502 stack and increments stack pointer
+ * @param cpu - CPU state object with stack pointer
+ * @param memory - Memory array
+ * @returns The byte pulled from the stack
+ */
 const pullByte = (cpu: CPUState, memory: Uint8Array): number => {
   cpu.SP = (cpu.SP + 1) & 0xFF;
   return memory[STACK_BASE + cpu.SP];
 };
 
+/**
+ * Pushes a 16-bit word onto the stack (high byte first, then low byte)
+ * @param cpu - CPU state object with stack pointer
+ * @param memory - Memory array
+ * @param value - 16-bit value to push
+ */
 const pushWord = (cpu: CPUState, memory: Uint8Array, value: number) => {
   pushByte(cpu, memory, (value >> 8) & 0xFF); // High byte
   pushByte(cpu, memory, value & 0xFF);      // Low byte
 };
 
+/**
+ * Pulls a 16-bit word from the stack (low byte first, then high byte)
+ * @param cpu - CPU state object with stack pointer
+ * @param memory - Memory array
+ * @returns The 16-bit word pulled from the stack
+ */
 const pullWord = (cpu: CPUState, memory: Uint8Array): number => {
   const lowByte = pullByte(cpu, memory);
   const highByte = pullByte(cpu, memory);
@@ -451,6 +486,11 @@ define(0x04, "NOP*", AM.ZP, NOP, 2, 3); // Example, often TSB zp
 // which is handled inside BRK's AM.fetchByte. So from disassembler POV it could be 2.
 // For simplicity of PC advancement here, it's 1, and BRK handler advances PC for the padding.
 
+/**
+ * Retrieves the instruction definition for a given opcode
+ * @param opCode - 8-bit opcode value (0-255)
+ * @returns Instruction definition if found, undefined if invalid opcode
+ */
 export const getInstructionDefinition = (opCode: number): InstructionDefinition | undefined => {
   return instructionSet.get(opCode);
 };

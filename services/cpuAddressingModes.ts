@@ -4,14 +4,24 @@ import { CPUState } from '../types';
 // Note: PC should be incremented by the caller for the opcode byte.
 // These functions handle PC increment for operand bytes.
 
-// Fetches a byte from memory at PC and increments PC.
+/**
+ * Fetches a byte from memory at the current PC and increments PC
+ * @param cpu - CPU state object with PC register
+ * @param memory - Memory array to read from
+ * @returns The byte at the current PC location
+ */
 export const fetchByte = (cpu: CPUState, memory: Uint8Array): number => {
   const byte = memory[cpu.PC];
   cpu.PC = (cpu.PC + 1) & 0xFFFF;
   return byte;
 };
 
-// Fetches a word (2 bytes, little-endian) from memory at PC and increments PC by 2.
+/**
+ * Fetches a 16-bit word (little-endian) from memory at PC and increments PC by 2
+ * @param cpu - CPU state object with PC register
+ * @param memory - Memory array to read from
+ * @returns The 16-bit word formed from two consecutive bytes
+ */
 export const fetchWord = (cpu: CPUState, memory: Uint8Array): number => {
   const lowByte = fetchByte(cpu, memory);
   const highByte = fetchByte(cpu, memory);
