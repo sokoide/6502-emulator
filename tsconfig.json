@@ -26,8 +26,18 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
-    }
+    },
+    "baseUrl": ".",
+    "include": [
+      "src/**/*",
+      "tests/**/*"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      "docs"
+    ]
   }
 }

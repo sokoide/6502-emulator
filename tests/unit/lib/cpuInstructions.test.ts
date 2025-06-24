@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { getInstructionDefinition, instructionSet } from './cpuInstructions';
-import { createCPUState, createMemory, expectFlags, expectMemory } from '../test/utils/testHelpers';
-import { Flag } from '../types';
-import { STACK_BASE } from '../constants';
+import { getInstructionDefinition, instructionSet } from '../../../src/lib/cpuInstructions';
+import { createCPUState, createMemory, expectFlags, expectMemory } from '../testHelpers';
+import { Flag } from '../../../src/types';
+import { STACK_BASE } from '../../../src/constants';
 
 describe('CPU Instructions', () => {
   describe('getInstructionDefinition', () => {

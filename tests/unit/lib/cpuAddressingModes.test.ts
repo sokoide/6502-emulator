@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import * as AM from './cpuAddressingModes';
-import { createCPUState, createMemory } from '../test/utils/testHelpers';
+import * as AM from '../../../src/lib/cpuAddressingModes';
+import { createCPUState, createMemory } from '../testHelpers';
 
 describe('CPU Addressing Modes', () => {
   describe('fetchByte', () => {

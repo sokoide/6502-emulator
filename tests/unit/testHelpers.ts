@@ -1,5 +1,5 @@
-import { CPUState, Flag } from '../../types';
-import { MEMORY_SIZE } from '../../constants';
+import { CPUState, Flag } from '../../src/types';
+import { MEMORY_SIZE } from '../../src/constants';
 
 /**
  * Creates a default CPU state for testing

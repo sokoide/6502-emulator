@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SIMPLE_PROGRAM_HEX, DEFAULT_PROGRAM_LOAD_ADDRESS, MEMORY_SIZE } from '../constants';
+import { SIMPLE_PROGRAM_HEX, DEFAULT_PROGRAM_LOAD_ADDRESS, MEMORY_SIZE } from '../../../src/constants';
 
 describe('Emulator Utilities', () => {
   describe('Hex Program Parsing', () => {

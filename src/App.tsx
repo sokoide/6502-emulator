@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { use6502Emulator } from './services/use6502Emulator';
+import { use6502Emulator } from './lib/use6502Emulator';
 import CpuControls from './components/CpuControls';
 import CpuRegistersView from './components/CpuRegistersView';
 import CpuFlagsView from './components/CpuFlagsView';

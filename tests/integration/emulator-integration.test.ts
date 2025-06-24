@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { getInstructionDefinition } from './cpuInstructions';
-import { createCPUState, createMemory, expectFlags } from '../test/utils/testHelpers';
-import { Flag } from '../types';
-import { DEFAULT_PROGRAM_LOAD_ADDRESS, MEMORY_SIZE } from '../constants';
+import { getInstructionDefinition } from '../../src/lib/cpuInstructions';
+import { createCPUState, createMemory, expectFlags } from '../unit/testHelpers';
+import { Flag } from '../../src/types';
+import { DEFAULT_PROGRAM_LOAD_ADDRESS, MEMORY_SIZE } from '../../src/constants';
 
 describe('Emulator Core Integration', () => {
   describe('Program Loading and Execution', () => {
